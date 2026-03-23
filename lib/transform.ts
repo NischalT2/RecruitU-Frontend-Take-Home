@@ -45,6 +45,7 @@ function getSkills(seniority: Seniority) {
     return getRandom(SKILLS, 5);
 }
 
+/** Returns a random subset of companies based on the seniority */
 function getPreviousCompanies(seniority: Seniority) {
     if (seniority === "Junior") return getRandom(COMPANIES, 1);
     if (seniority === "Mid") return getRandom(COMPANIES, 2);

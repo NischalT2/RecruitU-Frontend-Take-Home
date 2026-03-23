@@ -10,7 +10,6 @@ export interface RandomUserResult {
     location: { city: string; state: string; country: string };
 }
 
-/** Interface for a candidate */
 export interface Candidate {
     id: string;
     name: string;
@@ -28,21 +27,17 @@ export interface Candidate {
     degree: string;
 }
 
-/** Interface for the filter state */
 export interface FilterState {
     search: string;
     seniority: Seniority[];
-    countries: string[];
     skills: string[];
     degree: string[];
+    countries: string[];
+    saved: boolean;
 }
 
 export interface FilterControlProps {
     filters: FilterState;
     setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
-}
-
-export interface CandidateCardProps {
-    candidate: Candidate;
 }
 
