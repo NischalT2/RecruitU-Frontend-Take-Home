@@ -83,7 +83,10 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                     size="icon" 
                     aria-label={isSaved ? "Remove from saved" : "Save"}
                     className="cursor-pointer"
-                    onClick={toggleSaved}>
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSaved();
+                    }}>
                     <Bookmark className={cn("size-8", isSaved && "fill-primary")} />
                 </Button>
             </div>
