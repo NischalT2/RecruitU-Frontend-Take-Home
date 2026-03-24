@@ -11,5 +11,4 @@ export async function fetchCandidates(){
     // Transform the data into candidates
     const data = await res.json();
     return data.results.map(transformCandidate);
-
 }
