@@ -64,44 +64,63 @@ export default function ProfilePanel({
         <div
             aria-label="Candidate preview panel"
             className={cn(
-                "h-full w-[420px] shrink-0 border-l border-border bg-card shadow-lg transition-transform duration-300 ease-out",
+                "h-full w-full border-l border-border bg-card shadow-lg transition-transform duration-300 ease-out md:w-[420px]",
                 isSlidIn ? "translate-x-0" : "translate-x-full"
             )}
         >
             <div className="flex h-full flex-col">
                 <div className="sticky top-0 z-10 border-b border-border bg-card p-4">
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="flex flex-1 items-center gap-2">
-                            <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                                <Image src={candidate.avatarUrl} alt={candidate.name} fill sizes="48px" className="object-cover" />
+                    <div className="flex flex-col gap-3">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            className="flex w-fit items-center gap-2 py-2 pr-2 touch-manipulation -ml-2 md:hidden"
+                            aria-label="Back to candidates"
+                            onClick={onClose}
+                        >
+                            <ChevronLeft className="size-5" />
+                            <span className="text-sm font-medium">Back</span>
+                        </Button>
+                        <div className="flex items-start justify-between gap-2">
+                            <div className="flex min-w-0 flex-1 items-center gap-2">
+                                <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                                    <Image src={candidate.avatarUrl} alt={candidate.name} fill sizes="48px" className="object-cover" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="truncate text-base font-semibold text-text-primary">{candidate.name}</h2>
+                                    <p className="truncate text-xs text-text-tertiary">
+                                        {candidate.city}, {candidate.country}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex-1">
-                                <h2 className="truncate text-base font-semibold text-text-primary">{candidate.name}</h2>
-                                <p className="truncate text-xs text-text-tertiary">
-                                    {candidate.city}, {candidate.country}
-                                </p>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={`mailto:${candidate.email}`}
+                                    className="inline-flex size-10 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-muted hover:text-text-secondary md:size-8"
+                                    aria-label={`Email ${candidate.name}`}
+                                    title="Email candidate"
+                                >
+                                    <Mail className="size-4" />
+                                </a>
+                                <a
+                                    href={`tel:${candidate.phone}`}
+                                    className="inline-flex size-10 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-muted hover:text-text-secondary md:size-8"
+                                    aria-label={`Call ${candidate.name}`}
+                                    title="Call candidate"
+                                >
+                                    <Phone className="size-4" />
+                                </a>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="hidden md:inline-flex"
+                                    aria-label="Close profile"
+                                    onClick={onClose}
+                                >
+                                    <X className="size-4" />
+                                </Button>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <a
-                                href={`mailto:${candidate.email}`}
-                                className="inline-flex size-8 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-muted hover:text-text-secondary"
-                                aria-label={`Email ${candidate.name}`}
-                                title="Email candidate"
-                            >
-                                <Mail className="size-4" />
-                            </a>
-                            <a
-                                href={`tel:${candidate.phone}`}
-                                className="inline-flex size-8 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-muted hover:text-text-secondary"
-                                aria-label={`Call ${candidate.name}`}
-                                title="Call candidate"
-                            >
-                                <Phone className="size-4" />
-                            </a>
-                            <Button type="button" variant="ghost" size="icon" aria-label="Close profile preview" onClick={onClose}>
-                                <X className="size-4" />
-                            </Button>
                         </div>
                     </div>
 

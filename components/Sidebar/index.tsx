@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { FilterControlProps as SidebarProps, Seniority } from "@/types/candidate";
 import { SKILLS } from "@/lib/constants/skills";
@@ -16,8 +16,9 @@ interface MultiSelectSectionProps<T extends string> {
     isOpen: boolean;
     onToggleOpen: () => void;
     onToggleOption: (value: T) => void;
+    compact?: boolean;
 }
-function MultiSelectSection<T extends string>({title, options, selected, isOpen, onToggleOpen, onToggleOption}: MultiSelectSectionProps<T>) {
+function MultiSelectSection<T extends string>({title, options, selected, isOpen, onToggleOpen, onToggleOption, compact}: MultiSelectSectionProps<T>) {
     const [query, setQuery] = useState("");
     const debouncedQuery = useDebounce(query, 200);
     const shouldShowSearch = options.length >= 8;
@@ -32,7 +33,7 @@ function MultiSelectSection<T extends string>({title, options, selected, isOpen,
     );
 
     return (
-        <div className="border border-border rounded-xl p-2 bg-card hover:border-border/80 transition-colors">
+        <div className={compact ? "border-b border-border px-2 py-2 last:border-b-0" : "border border-border rounded-xl p-2 bg-card hover:border-border/80 transition-colors"}>
             <button type="button"
                 className="w-full flex items-center justify-between gap-4 text-left cursor-pointer rounded-lg px-2 py-2 transition-colors hover:bg-muted"
                 onClick={onToggleOpen}
@@ -41,7 +42,7 @@ function MultiSelectSection<T extends string>({title, options, selected, isOpen,
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-text-primary truncate">{title}</span>
                     {selected.length > 0 ? (
-                        <span className="ml-2 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-text-secondary">
+                        <span className="ml-2 inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-text-secondary">
                             {selected.length}
                         </span>
                     ) : null}
@@ -95,7 +96,8 @@ interface SidebarWithCountriesProps extends SidebarProps {
 }
 
 export default function Sidebar({ filters, setFilters, countryOptions = [] }: SidebarWithCountriesProps) {
-    const [panelOpen, setPanelOpen] = useState(true);
+    const [panelOpen, setPanelOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [sectionsOpen, setSectionsOpen] = useState({
         seniority: true,
         skills: false,
@@ -118,6 +120,24 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
         );
     }, [filters]);
 
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 767px)");
+        const handler = () => setIsMobile(mq.matches);
+        queueMicrotask(() => handler());
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+    }, []);
+
+    useEffect(() => {
+        if (panelOpen && isMobile) {
+            const prev = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            return () => {
+                document.body.style.overflow = prev;
+            };
+        }
+    }, [panelOpen, isMobile]);
+
     const clearFilters = () => {
         setFilters((prev) => ({
             ...prev,
@@ -130,8 +150,22 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
     };
 
     return (
-        <div className="h-full border-r border-border bg-card">
-            <div className={`h-full transition-[width] duration-200 ease-in-out overflow-hidden flex flex-col ${panelOpen ? "w-72 p-4" : "w-14 p-2"}`}>
+        <div
+            className={`h-full border-r border-border bg-card transition-[width] duration-200 ${panelOpen ? "max-md:w-0 max-md:min-w-0 max-md:border-r-0" : ""}`}
+        >
+            {panelOpen && (
+                <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Close filters"
+                    onClick={() => setPanelOpen(false)}
+                    onKeyDown={(e) => e.key === "Enter" && setPanelOpen(false)}
+                    className="fixed top-30 left-0 right-0 bottom-0 z-40 bg-black/20 md:hidden touch-none"
+                />
+            )}
+            <div
+                className={`h-full transition-[width] duration-200 ease-in-out overflow-hidden flex flex-col ${panelOpen ? "w-72 p-4 max-md:fixed max-md:top-30 max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:z-50 max-md:h-[calc(100dvh-7.5rem)] max-md:w-full max-md:rounded-none max-md:flex max-md:flex-col max-md:bg-card max-md:shadow-xl" : "w-14 p-2"}`}
+            >
                 <div className="flex items-center justify-between">
                     <button
                         type="button"
@@ -153,17 +187,20 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                             </div>
                         ) : null}
                     </button>
-                    <button type="button"
+                    <button
+                        type="button"
                         aria-expanded={panelOpen}
+                        aria-label={panelOpen ? "Close filters" : "Open filters"}
                         onClick={() => setPanelOpen((prev) => !prev)}
-                        className="inline-flex items-center cursor-pointer justify-center h-8 w-8 rounded-lg hover:bg-muted transition-all duration-150 hover:shadow-sm text-text-secondary">
+                        className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg transition-colors hover:bg-muted text-text-secondary"
+                    >
                         {panelOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                     </button>
                 </div>
 
                 {panelOpen ? (
-                    <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2">
-                        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-2">
+                    <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+                        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden pr-2 overscroll-contain">
                             <MultiSelectSection
                                 title="Seniority"
                                 options={SENIORITY_OPTIONS}
@@ -176,6 +213,7 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                         seniority: toggleFilter(prev.seniority, seniority),
                                     }))
                                 }
+                                compact={isMobile && panelOpen}
                             />
 
                             <MultiSelectSection
@@ -190,6 +228,7 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                         skills: toggleFilter(prev.skills, skill),
                                     }))
                                 }
+                                compact={isMobile && panelOpen}
                             />
 
                             <MultiSelectSection
@@ -204,6 +243,7 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                         degree: toggleFilter(prev.degree, degree),
                                     }))
                                 }
+                                compact={isMobile && panelOpen}
                             />
 
                             {countryOptions.length > 0 ? (
@@ -219,12 +259,13 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                             countries: toggleFilter(prev.countries, country),
                                         }))
                                     }
+                                    compact={isMobile && panelOpen}
                                 />
                             ) : null}
 
-                            <div className="border border-border rounded-xl p-2 bg-card hover:border-border/80 transition-colors">
+                            <div className={isMobile && panelOpen ? "border-b border-border px-2 py-2 last:border-b-0" : "border border-border rounded-xl p-2 bg-card hover:border-border/80 transition-colors"}>
                                 <button type="button"
-                                    className="w-full flex items-center justify-between gap-2 text-left cursor-pointer rounded-lg px-2 py-2 transition-colors hover:bg-muted"
+                                    className="w-full flex items-center justify-between gap-4 text-left cursor-pointer rounded-lg px-2 py-2 transition-colors hover:bg-muted"
                                     onClick={() => setSectionsOpen((prev) => ({ ...prev, saved: !prev.saved }))}
                                     aria-expanded={sectionsOpen.saved}
                                 >
@@ -236,30 +277,33 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                             </span>
                                         ) : null}
                                     </div>
-                                    <span className="inline-flex items-center justify-center text-text-secondary">
-                                        {sectionsOpen.saved ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                                    </span>
+                                    <div className="flex items-center justify-center">
+                                        <span className="text-text-secondary">
+                                            {sectionsOpen.saved ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                                        </span>
+                                    </div>
                                 </button>
 
                                 <div className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out ${sectionsOpen.saved ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"}`}>
-                                    <div className="min-h-0 overflow-hidden pt-2">
-                                        <button
-                                            type="button"
-                                            aria-pressed={filters.saved}
-                                            onClick={() => setFilters((prev) => ({ ...prev, saved: !prev.saved }))}
-                                            className={`w-full cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 ${filters.saved ? "bg-primary border-primary text-primary-foreground hover:bg-primary/80 hover:border-primary/80" : "bg-muted border-border text-text-primary hover:bg-card hover:border-border"}`}>
-                                            {filters.saved ? <Check size={18} /> : null}
-                                            Saved Only
-                                        </button>
+                                    <div className="min-h-0 overflow-hidden">
+                                        <div className="pt-2">
+                                            <button
+                                                type="button"
+                                                aria-pressed={filters.saved}
+                                                onClick={() => setFilters((prev) => ({ ...prev, saved: !prev.saved }))}
+                                                className={`w-full cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 ${filters.saved ? "bg-primary border-primary text-primary-foreground hover:bg-primary/80 hover:border-primary/80" : "bg-muted border-border text-text-primary hover:bg-card hover:border-border"}`}>
+                                                {filters.saved ? <Check size={18} /> : null}
+                                                Saved Only
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div className="pt-4 border-t border-border">
+                        <div className="border-t border-border bg-card py-4 max-md:pb-6">
                             <button
                                 type="button"
-                                className={`w-full px-4 py-2 cursor-pointer rounded-lg text-sm font-semibold border transition-colors ${activeFiltersCount > 0 ? "bg-muted border-border text-text-primary hover:bg-muted/80 hover:shadow-sm" : "bg-muted border-border text-text-tertiary cursor-not-allowed"}`}
+                                className={`w-full px-4 py-4 cursor-pointer rounded-lg text-sm font-semibold border transition-colors ${activeFiltersCount > 0 ? "bg-muted border-border text-text-primary hover:bg-muted/80 hover:shadow-sm" : "bg-muted border-border text-text-tertiary cursor-not-allowed"}`}
                                 onClick={clearFilters}
                                 disabled={activeFiltersCount === 0}>
                                 Clear all filters

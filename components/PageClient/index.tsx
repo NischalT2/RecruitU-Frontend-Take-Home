@@ -63,7 +63,9 @@ export default function PageClient({initialCandidates}: PageClientProps) {
                         </div>
                     </div>
                 </div>
-                <div className={`overflow-hidden transition-[width] duration-300 ease-out ${selectedCandidate ? "w-[420px]" : "w-0"}`}>
+                <div
+                    className={`overflow-hidden transition-[width] duration-300 ease-out ${selectedCandidate ? "w-full md:w-[420px]" : "w-0"}`}
+                >
                     {selectedCandidate && (
                         <ProfilePanel
                             candidate={selectedCandidate}
