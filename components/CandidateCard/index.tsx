@@ -43,10 +43,9 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                         {candidate.name}
                     </h3>
                     <div className="flex items-center gap-2">
-                        <span className={cn("inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-md leading-none", getSeniorityClasses(candidate.seniority))}>
-                            {candidate.seniority}
+                        <span className={cn("inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md leading-none", getSeniorityClasses(candidate.seniority))}>
+                            {candidate.seniority} · {candidate.experience} yrs
                         </span>
-                        <span className="text-[11px] text-text-tertiary">{candidate.experience} yrs</span>
                     </div>
                     <div className="flex items-center gap-1 text-[11px] text-text-tertiary">
                         <MapPin className="size-3" />
