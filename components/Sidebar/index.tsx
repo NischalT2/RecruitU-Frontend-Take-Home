@@ -99,7 +99,7 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
     const [panelOpen, setPanelOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [sectionsOpen, setSectionsOpen] = useState({
-        seniority: true,
+        seniority: false,
         skills: false,
         degree: false,
         countries: false,
