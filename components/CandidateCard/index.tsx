@@ -1,13 +1,12 @@
 "use client";
 import type { Candidate } from "@/types/candidate";
 import Image from "next/image";
-import { Bookmark } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, GraduationCap, MapPin } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { getSeniorityClasses } from "@/lib/seniority";
 
-// number of skills and companies shown in the card
-const MAX_SKILLS = 2;
+const MAX_SKILLS = 3;
 const MAX_COMPANIES = 2;
 
 interface CandidateCardProps {
@@ -18,78 +17,117 @@ interface CandidateCardProps {
 }
 
 export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenProfile }: CandidateCardProps) {
-    // get skills and companies to show in the card
     const visibleSkills = candidate.skills.slice(0, MAX_SKILLS);
     const extraSkills = Math.max(0, candidate.skills.length - MAX_SKILLS);
     const visibleCompanies = candidate.previousCompanies.slice(0, MAX_COMPANIES);
     const extraCompanies = Math.max(0, candidate.previousCompanies.length - MAX_COMPANIES);
 
     return (
-        <div className="overflow-hidden border border-border rounded-2xl flex flex-col cursor-pointer p-4 h-full min-h-[240px] bg-card hover:shadow-2xl hover:border-border/50 transition-all duration-300 gap-y-4">
-            <div className="flex items-start gap-4">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full sm:h-24 sm:w-24">
-                    <Image src={candidate.avatarUrl} alt={candidate.name} fill sizes="96px" className="object-cover"/>
+        <article
+            onClick={onOpenProfile}
+            className="group relative flex h-[240px] flex-col cursor-pointer rounded-xl border border-border bg-card shadow-[0_1px_3px_rgba(55,53,47,0.06)] hover:shadow-[0_8px_24px_rgba(55,53,47,0.12)] hover:-translate-y-0.5 hover:border-border/70 transition-all duration-200 overflow-hidden"
+        >
+            {/* Identity */}
+            <div className="flex items-start gap-4 p-4 pb-2">
+                <div className="relative h-[50px] w-[50px] overflow-hidden rounded-full ring-1 ring-black/10">
+                    <Image
+                        src={candidate.avatarUrl}
+                        alt={candidate.name}
+                        fill
+                        sizes="50px"
+                        className="object-cover"
+                    />
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    <h3 className="min-w-0 truncate text-lg font-semibold text-text-primary">{candidate.name}</h3>
-                    <p className="min-w-0 truncate text-sm text-text-tertiary">{candidate.city}, {candidate.country}</p>
-                    <div className={`${getSeniorityClasses(candidate.seniority)} inline-flex w-fit rounded-full`}>
-                        <span className="truncate min-w-0 px-2 py-1 text-xs sm:text-sm">
-                            {candidate.seniority} • {candidate.experience} yrs
+                    <h3 className="truncate text-base font-bold leading-tight text-text-primary">
+                        {candidate.name}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                        <span className={cn("inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded-md leading-none", getSeniorityClasses(candidate.seniority))}>
+                            {candidate.seniority}
                         </span>
+                        <span className="text-[11px] text-text-tertiary">{candidate.experience} yrs</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-text-tertiary">
+                        <MapPin className="size-3" />
+                        <span className="truncate">{candidate.city}, {candidate.country}</span>
                     </div>
                 </div>
-            </div>
-            <div className="flex items-center text-text-tertiary text-sm">
-                <div className="flex flex-wrap gap-1">
-                    Previously at
-                    {visibleCompanies.map((company, index) => (
-                        <span key={company}>
-                            {company}
-                            {index < visibleCompanies.length - 1 && ","}
-                        </span>
-                    ))}
-                    {extraCompanies > 0 && (
-                    <span>
-                        and {extraCompanies} more
-                    </span>
-                )}
-                </div>
-            </div>
-            <div className="flex items-start min-h-12">
-                <div className="flex flex-wrap gap-2 text-text-secondary">
-                    {visibleSkills.map((skill) => (
-                        <span key={skill} className="max-w-full truncate text-sm bg-muted rounded-full py-0.5 px-2 text-text-secondary">
-                            {skill}
-                        </span>
-                    ))}
-                    {extraSkills > 0 && (
-                        <span className="max-w-full truncate text-sm bg-muted rounded-full py-1 px-2 text-text-secondary">
-                            + {extraSkills}
-                        </span>
-                    )}
-                </div>
-            </div>
-            <div className="mt-auto flex items-center gap-2">
-                <button
+
+                <Button
                     type="button"
-                    onClick={onOpenProfile}
-                    className="flex-1 truncate text-sm bg-primary text-white font-bold rounded p-2 cursor-pointer hover:bg-primary/90">
-                    View Profile
-                </button>
-                <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
+                    variant="ghost"
+                    size="icon-sm"
                     aria-label={isSaved ? "Remove from saved" : "Save"}
-                    className="cursor-pointer"
+                    className="mt-0.5 cursor-pointer rounded-full border border-border bg-background hover:bg-muted"
                     onClick={(e) => {
                         e.stopPropagation();
                         toggleSaved();
-                    }}>
-                    <Bookmark className={cn("size-8", isSaved && "fill-primary")} />
+                    }}
+                >
+                    <Bookmark className={cn("size-4", isSaved ? "fill-text-primary text-text-primary" : "text-text-tertiary")} />
                 </Button>
             </div>
-        </div>
+
+            {/*Career & Education */}
+            <div className="mx-4 border-t border-border" />
+            <div className="flex flex-col gap-2 px-4 py-2">
+                {visibleCompanies.length > 0 && (
+                    <div className="flex items-center gap-2">
+                        <BriefcaseBusiness className="size-3 text-text-secondary" />
+                        <span className="truncate text-sm font-semibold text-text-primary">
+                            {visibleCompanies[0]}
+                        </span>
+                        {visibleCompanies[1] && (
+                            <>
+                                <span className="text-[11px] text-text-tertiary">·</span>
+                                <span className="truncate text-sm font-semibold text-text-primary">
+                                    {visibleCompanies[1]}
+                                </span>
+                            </>
+                        )}
+                        {extraCompanies > 0 && (
+                            <span className="text-[11px] text-text-tertiary">+{extraCompanies}</span>
+                        )}
+                    </div>
+                )}
+                <div className="flex items-center gap-2">
+                    <GraduationCap className="size-3 text-text-tertiary" />
+                    <span className="truncate text-xs text-text-secondary">
+                        {candidate.degree}
+                        <span className="text-text-tertiary"> · {candidate.education}</span>
+                    </span>
+                </div>
+            </div>
+
+            {/* Skills  */}
+            {visibleSkills.length > 0 && (
+                <>
+                    <div className="mx-4 border-t border-border" />
+                    <div className="flex items-center gap-2 overflow-hidden px-4 py-4">
+                        {visibleSkills.map((skill) => (
+                            <span
+                                key={skill}
+                                className="inline-flex min-w-0 shrink items-center rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-text-secondary"
+                            >
+                                <span className="truncate max-w-[90px]">{skill}</span>
+                            </span>
+                        ))}
+                        {extraSkills > 0 && (
+                            <span className="shrink-0 inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] text-text-tertiary">
+                                +{extraSkills}
+                            </span>
+                        )}
+                    </div>
+                </>
+            )}
+
+            {/* ── Footer ───────────────────────────────────────────── */}
+            <div className="mt-auto flex items-center justify-end border-t border-border bg-muted/40 px-4 py-2">
+                <span className="text-[11px] font-medium">
+                    View profile →
+                </span>
+            </div>
+        </article>
     );
 }

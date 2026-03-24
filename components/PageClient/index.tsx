@@ -39,16 +39,16 @@ export default function PageClient({initialCandidates}: PageClientProps) {
     const hasNext = selectedIndex >= 0 && selectedIndex < filteredCandidates.length - 1;
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex h-screen flex-col bg-background">
             <Navbar filters={filters} setFilters={setFilters} />
             <div className="flex flex-1 min-h-0">
                 <Sidebar filters={filters} setFilters={setFilters} countryOptions={countryOptions} />
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                    <div className="text-sm text-text-tertiary px-6 py-4 border-b border-border">
+                    <div className="px-6 py-4 text-xs font-medium uppercase tracking-wide text-text-tertiary border-b border-border bg-background/80">
                         Showing {filteredCandidates.length} candidates
                     </div>
                     <div className="min-h-0 flex-1 overflow-y-auto">
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-4 p-6">
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(330px,1fr))] gap-4 p-6">
                             {filteredCandidates.map((candidate) => (
                                 <div key={candidate.id} onClick={() => setSelectedCandidateId(candidate.id)}>
                                 <CandidateCard

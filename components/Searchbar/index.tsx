@@ -15,26 +15,33 @@ export default function Searchbar({filters, setFilters}: SearchbarProps) {
     }, [debouncedSearch, setFilters]);
 
     return (
-        <div className="w-full max-w-xl">
+        <div className="w-full">
             <div className="group relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary transition-colors group-focus-within:text-primary md:left-2" />
-                <input placeholder="Search by name" 
-                    className="w-full rounded-xl border border-border bg-card pl-8 pr-10 py-2 text-base text-text-primary shadow-sm transition-all placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary md:pl-8 md:pr-10 md:py-2 md:text-sm"
+                <Search
+                    size={15}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary transition-colors group-focus-within:text-text-secondary pointer-events-none"
+                />
+                <input
+                    placeholder="Search candidates..."
+                    className="w-full rounded-lg border border-border bg-card pl-8 pr-8 py-2 text-sm text-text-primary placeholder:text-text-tertiary transition-colors focus:outline-none focus:border-text-tertiary/60"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            setFilters({...filters, search: debouncedSearch});
+                            setFilters({ ...filters, search: debouncedSearch });
                         }
                     }}
                 />
-                {search ? (
-                    <button type="button"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-8 w-8 rounded-md text-text-tertiary hover:bg-muted hover:text-text-secondary cursor-pointer touch-manipulation md:right-10 md:h-6 md:w-6"
+                {search && (
+                    <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-6 w-6 rounded-md text-text-tertiary hover:text-text-secondary cursor-pointer"
                         aria-label="Clear search"
-                        onClick={() => {setSearch(""); setFilters((prev) => ({ ...prev, search: "" }));}}>
-                            <X size={14} />
-                    </button>) : null}
+                        onClick={() => { setSearch(""); setFilters((prev) => ({ ...prev, search: "" })); }}
+                    >
+                        <X size={13} />
+                    </button>
+                )}
             </div>
         </div>
     );
