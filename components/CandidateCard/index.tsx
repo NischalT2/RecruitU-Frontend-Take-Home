@@ -52,7 +52,6 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                         <span className="truncate">{candidate.city}, {candidate.country}</span>
                     </div>
                 </div>
-
                 <Button
                     type="button"
                     variant="ghost"
@@ -60,6 +59,7 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                     aria-label={isSaved ? "Remove from saved" : "Save"}
                     className="mt-0.5 cursor-pointer rounded-full border border-border bg-background hover:bg-muted"
                     onClick={(e) => {
+                        // prevents the click on bookmark button from triggering the profile panel
                         e.stopPropagation();
                         toggleSaved();
                     }}
@@ -67,20 +67,19 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                     <Bookmark className={cn("size-4", isSaved ? "fill-text-primary text-text-primary" : "text-text-tertiary")} />
                 </Button>
             </div>
-
             {/*Career & Education */}
             <div className="mx-4 border-t border-border" />
             <div className="flex flex-col gap-2 px-4 py-2">
                 {visibleCompanies.length > 0 && (
                     <div className="flex items-center gap-2">
                         <BriefcaseBusiness className="size-3 text-text-secondary" />
-                        <span className="truncate text-sm font-semibold text-text-primary">
+                        <span className="truncate text-[13px] font-semibold text-text-primary">
                             {visibleCompanies[0]}
                         </span>
                         {visibleCompanies[1] && (
                             <>
                                 <span className="text-[11px] text-text-tertiary">·</span>
-                                <span className="truncate text-sm font-semibold text-text-primary">
+                                <span className="truncate text-[13px] font-semibold text-text-primary">
                                     {visibleCompanies[1]}
                                 </span>
                             </>
@@ -98,7 +97,6 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                     </span>
                 </div>
             </div>
-
             {/* Skills  */}
             {visibleSkills.length > 0 && (
                 <>
@@ -120,8 +118,7 @@ export default function CandidateCard({ candidate, isSaved, toggleSaved, onOpenP
                     </div>
                 </>
             )}
-
-            {/* ── Footer ───────────────────────────────────────────── */}
+            {/*  Footer  */}
             <div className="mt-auto flex items-center justify-end border-t border-border bg-muted/40 px-4 py-2">
                 <span className="text-[11px] font-medium">
                     View profile →

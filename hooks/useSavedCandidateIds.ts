@@ -14,7 +14,6 @@ function readIds(){
         if (!raw) {
             return new Set();
         }
-        // Parse the raw data as an array of strings
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) {
             return new Set();
@@ -27,7 +26,6 @@ function readIds(){
     }
 }
 
-// Save the ids to local storage
 function writeIds(ids: Set<string>) {
     if (typeof window === "undefined") {
         return;
@@ -39,12 +37,12 @@ function writeIds(ids: Set<string>) {
     }
 }
 
-// Manage saved candidate ids
 export function useSavedCandidateIds() {
+    // localStorage not available in SSR, so we use useState to initialize empty set and hydrate in the effect
     const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
 
     useEffect(() => {
-        // Read the ids from local storage
+        // Marks state update as non-urgent, allowing UI to update and re-render
         startTransition(() => {
             setSavedIds(readIds());
         });
@@ -64,7 +62,7 @@ export function useSavedCandidateIds() {
         });
     }, []);
 
-    // Custom hook to check if a candidate is saved
+    // Check if a candidate is saved
     const isSaved = useCallback((id: string) => savedIds.has(id), [savedIds]);
 
     return { savedIds, isSaved, toggleSaved };

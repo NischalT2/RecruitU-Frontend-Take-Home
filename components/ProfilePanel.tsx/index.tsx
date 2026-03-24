@@ -36,8 +36,10 @@ export default function ProfilePanel({
     }, []);
 
     const [isSlidIn, setIsSlidIn] = useState(false);
+    
     useEffect(() => {
         if (open) {
+            // double requestAnimationFrame to ensure the panel is fully rendered before transition
             const id = requestAnimationFrame(() => {
                 requestAnimationFrame(() => setIsSlidIn(true));
             });

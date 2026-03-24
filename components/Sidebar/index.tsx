@@ -21,12 +21,14 @@ interface MultiSelectSectionProps<T extends string> {
 function MultiSelectSection<T extends string>({title, options, selected, isOpen, onToggleOpen, onToggleOption, compact}: MultiSelectSectionProps<T>) {
     const [query, setQuery] = useState("");
     const debouncedQuery = useDebounce(query, 200);
+    // shows search if there are more than 8 options
     const shouldShowSearch = options.length >= 8;
     const normalizedQuery = debouncedQuery.trim().toLowerCase();
     const filteredOptions = useMemo(
         () => options.filter((opt) => opt.toLowerCase().includes(normalizedQuery)),
         [options, normalizedQuery],
     );
+    // floats selected filters to the top
     const orderedOptions = useMemo(
         () => [...filteredOptions].sort((a, b) => Number(selected.includes(b)) - Number(selected.includes(a))),
         [filteredOptions, selected],
@@ -53,6 +55,7 @@ function MultiSelectSection<T extends string>({title, options, selected, isOpen,
                     </span>
                 </div>
             </button>
+            {/* Animates height from 0 to auto using grid-rows trick since CSS can't transition to height:auto directly  */}
             <div
                 className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"}`}
             >
@@ -63,7 +66,6 @@ function MultiSelectSection<T extends string>({title, options, selected, isOpen,
                             className="w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-text-tertiary/50"
                         />
                     ) : null}
-
                     <div className="max-h-52 overflow-y-auto">
                         <div className="flex flex-wrap gap-2">
                             {orderedOptions.map((opt) => {
@@ -78,7 +80,6 @@ function MultiSelectSection<T extends string>({title, options, selected, isOpen,
                             })}
                         </div>
                     </div>
-
                     {orderedOptions.length === 0 ? (
                         <p className="text-xs text-text-tertiary px-2">
                             No matches found.
@@ -123,11 +124,13 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
     useEffect(() => {
         const mq = window.matchMedia("(max-width: 767px)");
         const handler = () => setIsMobile(mq.matches);
+        // queueMicrotask to ensure the handler is called after the current event loop
         queueMicrotask(() => handler());
         mq.addEventListener("change", handler);
         return () => mq.removeEventListener("change", handler);
     }, []);
 
+    // prevent scrolling when the panel is open on mobile
     useEffect(() => {
         if (panelOpen && isMobile) {
             const prev = document.body.style.overflow;
@@ -197,7 +200,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                         {panelOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                     </button>
                 </div>
-
                 {panelOpen ? (
                     <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
                         <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden pr-2 overscroll-contain">
@@ -215,7 +217,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                 }
                                 compact={isMobile && panelOpen}
                             />
-
                             <MultiSelectSection
                                 title="Skills"
                                 options={SKILLS}
@@ -230,7 +231,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                 }
                                 compact={isMobile && panelOpen}
                             />
-
                             <MultiSelectSection
                                 title="Degree"
                                 options={DEGREES}
@@ -245,7 +245,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                 }
                                 compact={isMobile && panelOpen}
                             />
-
                             {countryOptions.length > 0 ? (
                                 <MultiSelectSection
                                     title="Country"
@@ -262,7 +261,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                     compact={isMobile && panelOpen}
                                 />
                             ) : null}
-
                             <div className={isMobile && panelOpen ? "border-b border-border px-2 py-2 last:border-b-0" : "border border-border rounded-xl p-2 bg-card transition-colors"}>
                                 <button type="button"
                                     className="w-full flex items-center justify-between gap-4 text-left cursor-pointer rounded-lg px-2 py-2 transition-colors hover:bg-muted"
@@ -283,7 +281,6 @@ export default function Sidebar({ filters, setFilters, countryOptions = [] }: Si
                                         </span>
                                     </div>
                                 </button>
-
                                 <div className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out ${sectionsOpen.saved ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"}`}>
                                     <div className="min-h-0 overflow-hidden">
                                         <div className="pt-2">

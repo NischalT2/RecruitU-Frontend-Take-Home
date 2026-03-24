@@ -47,20 +47,27 @@ export default function PageClient({initialCandidates}: PageClientProps) {
                     <div className="px-6 py-4 text-xs font-medium uppercase tracking-wide text-text-tertiary border-b border-border bg-background/80">
                         Showing {filteredCandidates.length} candidates
                     </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto">
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(330px,1fr))] gap-4 p-6">
-                            {filteredCandidates.map((candidate) => (
-                                <div key={candidate.id} onClick={() => setSelectedCandidateId(candidate.id)}>
-                                <CandidateCard
-                                    key={candidate.id}
-                                    candidate={candidate}
-                                    isSaved={isSaved(candidate.id)}
-                                    toggleSaved={() => toggleSaved(candidate.id)}
-                                    onOpenProfile={() => setSelectedCandidateId(candidate.id)}
-                                />
-                                </div>
-                            ))}
-                        </div>
+                    <div className="flex-1 overflow-y-auto">
+                        {filteredCandidates.length === 0 ? (
+                            <div className="flex h-full flex-col items-center justify-center gap-2 text-center p-6">
+                                <p className="text-sm font-medium text-text-secondary">No candidates match your filters</p>
+                                <p className="text-xs text-text-tertiary">Try adjusting or clearing your filters to see more results</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-[repeat(auto-fill,minmax(330px,1fr))] gap-4 p-6">
+                                {filteredCandidates.map((candidate) => (
+                                    <div key={candidate.id} onClick={() => setSelectedCandidateId(candidate.id)}>
+                                        <CandidateCard
+                                            key={candidate.id}
+                                            candidate={candidate}
+                                            isSaved={isSaved(candidate.id)}
+                                            toggleSaved={() => toggleSaved(candidate.id)}
+                                            onOpenProfile={() => setSelectedCandidateId(candidate.id)}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div

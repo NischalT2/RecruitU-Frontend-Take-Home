@@ -26,6 +26,7 @@ export default function Searchbar({filters, setFilters}: SearchbarProps) {
                     className="w-full rounded-lg border border-border bg-card pl-8 pr-8 py-2 text-sm text-text-primary placeholder:text-text-tertiary transition-colors focus:outline-none focus:border-text-tertiary/60"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    // trigger immediate debounced search on Enter keypress
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             setFilters({ ...filters, search: debouncedSearch });
